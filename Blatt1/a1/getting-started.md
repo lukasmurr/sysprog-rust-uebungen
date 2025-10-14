@@ -53,4 +53,5 @@ Demonstriert die Verwendung einer externen Bibliothek:
 
 - **Rustaceans**: So nennen sich Rust-Programmierer (Wortspiel auf "Crustaceans")
 - **Ferris**: Inoffizielles Maskottchen der Rust-Community (Name leitet sich von "ferrous" = eisenhaltig ab)
-- Weitere Lernressourcen auf der Learn-Seite verfügbar
+
+![Alt Text](https://rust-lang.org/static/images/ferris.gif)
