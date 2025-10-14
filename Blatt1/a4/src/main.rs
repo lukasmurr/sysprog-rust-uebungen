@@ -13,8 +13,8 @@ fn main() {
     println!("{}", n);
 
     while n != 1 {
-        if n % 2 == 0 {
-            n = n / 2;
+        if n.is_multiple_of(2) {
+            n /= 2;
         } else {
             n = 3 * n + 1;
         }
