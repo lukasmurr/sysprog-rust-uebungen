@@ -1,2 +1,4 @@
-# sysprog_rust_uebungen-
+# sysprog-rust-uebungen
+
 Rust Uebungen für das Fach Systemnahe Programmierung
+
