@@ -40,7 +40,7 @@ fn main() {
 
     // But long Tuples (more than 12 elements) cannot be printed.
     // Uncommented to show the compiler error:
-    let too_long_tuple = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
+    // let too_long_tuple = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
     // This line would cause a compiler error because tuples with more than 12 elements
     // don't implement Debug trait automatically:
     // println!("Too long tuple: {:?}", too_long_tuple);
@@ -63,21 +63,14 @@ fn main() {
 
     // Matrix examples
     let matrix = Matrix(1.1, 1.2, 2.1, 2.2);
-    
+
     // Debug format (before)
     println!("Matrix debug format: {:?}", matrix);
-    
-    // Activity 1 result: Display format
+
     println!("Matrix:\n{}", matrix);
-    
-    // Activity 2 result: Transpose function
+
     println!("Transpose:\n{}", transpose(matrix));
-    
-    // Demonstrating that the original matrix is unchanged (since we moved it)
-    // We need a new matrix to show this
-    let matrix2 = Matrix(1.1, 1.2, 2.1, 2.2);
-    let transposed = transpose(matrix2);
-    
+
     // Show another example with different values
     let matrix3 = Matrix(1.0, 2.0, 3.0, 4.0);
     println!("\nAnother example:");

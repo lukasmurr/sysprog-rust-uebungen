@@ -1,5 +1,6 @@
 use std::fmt;
-
+#[allow(clippy::print_literal)]
+#[deny(clippy::approx_constant)]
 fn main() {
     // In general, the `{}` will be automatically replaced with any
     // arguments. These will be stringified.
@@ -31,7 +32,7 @@ fn main() {
 
     // You can pad numbers with extra zeroes,
     println!("{number:0>5}", number = 1); // 00001
-                                          // and left-adjust by flipping the sign. This will output "10000".
+    // and left-adjust by flipping the sign. This will output "10000".
     println!("{number:0<5}", number = 1); // 10000
 
     // You can use named arguments in the format specifier by appending a `$`.
@@ -61,5 +62,6 @@ fn main() {
     println!("{number:>width$}");
 
     let pi = 3.141592;
+    // pi = f{32, 64}::consts::PI;
     println!("Pi is roughly {:.3}", pi);
 }

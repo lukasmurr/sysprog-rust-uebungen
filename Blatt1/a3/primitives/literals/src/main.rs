@@ -1,3 +1,4 @@
+#[allow(clippy::nonminimal_bool)]
 fn main() {
     // Integer addition
     println!("1 + 2 = {}", 1u32 + 2);
@@ -5,15 +6,14 @@ fn main() {
     // Integer subtraction
     println!("1 - 2 = {}", 1i32 - 2);
     // println!("1 - 2 = {}", 1u32 - 2); attempt to compute `1_u32 - 2_u32`, which would overflow
-    // TODO ^ Try changing `1i32` to `1u32` to see why the type is important
-
+    
     // Scientific notation
     println!("1e4 is {}, -2.5e-3 is {}", 1e4, -2.5e-3);
 
     // Short-circuiting boolean logic
-    println!("true AND false is {}", true && false);
-    println!("true OR false is {}", true || false);
-    println!("NOT true is {}", !true);
+    println!("true AND false is {}", true && false); // false
+    println!("true OR false is {}", true || false); // true
+    println!("NOT true is {}", !true); // false
 
     // Bitwise operations
     println!("0011 AND 0101 is {:04b}", 0b0011u32 & 0b0101);
