@@ -95,7 +95,7 @@ ein minimales Programm in Rust.
 Erweitern sie ihr Programm nun, so dass sie den gewünschten Exit-Code 
 auf der Kommandozeile als Argument eingeben können:
 
-```bash 
+```bash
 $ ./programm 0
 $ echo $?
 0
