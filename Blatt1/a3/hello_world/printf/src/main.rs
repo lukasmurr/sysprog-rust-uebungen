@@ -1,6 +1,6 @@
 use std::fmt;
+
 #[allow(clippy::print_literal)]
-#[deny(clippy::approx_constant)]
 fn main() {
     // In general, the `{}` will be automatically replaced with any
     // arguments. These will be stringified.
