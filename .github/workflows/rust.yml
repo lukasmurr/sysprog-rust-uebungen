@@ -2,21 +2,133 @@ name: Rust
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: [ "develop", "main" ]
   pull_request:
-    branches: [ "develop" ]
+    branches: [ "develop", "main" ]
 
 env:
   CARGO_TERM_COLOR: always
+  CARGO_HTTP_CHECK_REVOKE: false
 
 jobs:
-  build:
-
+  detect-projects:
     runs-on: ubuntu-latest
-
+    outputs:
+      projects: ${{ steps.set-projects.outputs.projects }}
     steps:
-    - uses: actions/checkout@v4
-    - name: Build
-      run: cargo build --verbose
-    - name: Run tests
-      run: cargo test --verbose
+      - uses: actions/checkout@v4
+      
+      - name: Find all Cargo projects
+        id: set-projects
+        run: |
+          echo "🔍 Searching for Cargo projects..."
+          
+          # Alle Verzeichnisse mit Cargo.toml finden, target/ ausschließen
+          projects=$(find . -name "Cargo.toml" -not -path "./target/*" -not -path "./.git/*" | xargs dirname | sort)
+          
+          # Debug: Gefundene Projekte anzeigen
+          echo "Found Cargo projects:"
+          echo "$projects"
+          
+          # Zu JSON Array konvertieren für Matrix
+          if [ -n "$projects" ]; then
+            projects_json=$(echo "$projects" | jq -R . | jq -s -c .)
+            echo "projects=$projects_json" >> $GITHUB_OUTPUT
+            echo "✅ Projects JSON: $projects_json"
+          else
+            echo "projects=[]" >> $GITHUB_OUTPUT
+            echo "❌ No Cargo projects found"
+          fi
+
+  build:
+    runs-on: ubuntu-latest
+    needs: detect-projects
+    # Nur ausführen wenn Projekte gefunden wurden
+    if: ${{ fromJson(needs.detect-projects.outputs.projects)[0] }}
+    strategy:
+      # Verhindert Abbruch aller Jobs bei einem Fehler
+      fail-fast: false
+      matrix:
+        project: ${{ fromJson(needs.detect-projects.outputs.projects) }}
+        
+    steps:
+      - uses: actions/checkout@v4
+      
+      # Rust Cache für bessere Performance
+      - name: Setup Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ${{ matrix.project }}
+          key: ${{ matrix.project }}
+      
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      
+      - name: Build ${{ matrix.project }}
+        working-directory: ${{ matrix.project }}
+        run: |
+          echo "🔨 Building project in: ${{ matrix.project }}"
+          echo "📦 Package info:"
+          cargo read-manifest | jq '.name, .version' || echo "No manifest info available"
+          
+          cargo build --verbose
+          
+      - name: Test ${{ matrix.project }}
+        working-directory: ${{ matrix.project }}
+        run: |
+          echo "🧪 Testing project: ${{ matrix.project }}"
+          cargo test --verbose
+
+  # Optional: Linting Job
+  clippy:
+    runs-on: ubuntu-latest
+    needs: detect-projects
+    if: ${{ fromJson(needs.detect-projects.outputs.projects)[0] }}
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ${{ fromJson(needs.detect-projects.outputs.projects) }}
+        
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      
+      - name: Setup Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ${{ matrix.project }}
+          key: clippy-${{ matrix.project }}
+      
+      - name: Run Clippy for ${{ matrix.project }}
+        working-directory: ${{ matrix.project }}
+        run: |
+          echo "🔍 Running Clippy for: ${{ matrix.project }}"
+          cargo clippy --all-targets --all-features -- -D warnings
+
+  # Optional: Format Check
+  format:
+    runs-on: ubuntu-latest
+    needs: detect-projects
+    if: ${{ fromJson(needs.detect-projects.outputs.projects)[0] }}
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ${{ fromJson(needs.detect-projects.outputs.projects) }}
+        
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      
+      - name: Check formatting for ${{ matrix.project }}
+        working-directory: ${{ matrix.project }}
+        run: |
+          echo "📝 Checking format for: ${{ matrix.project }}"
+          cargo fmt --all -- --check
