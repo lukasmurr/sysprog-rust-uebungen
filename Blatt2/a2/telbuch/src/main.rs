@@ -62,7 +62,7 @@ fn load() -> TelBuch {
     let mut telbuch = TelBuch::new();
     if let Ok(file) = File::open(DATFILE) {
         let reader = BufReader::new(file);
-        for line in reader.lines().flatten() {
+        for line in reader.lines().map_while(Result::ok) {
             let parts: Vec<&str> = line.split('|').collect();
             if parts.len() == 2 {
                 telbuch
