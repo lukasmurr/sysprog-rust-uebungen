@@ -40,7 +40,7 @@ fn main() {
 
         match args[2].parse::<i32>() {
             Ok(code) => {
-                if code < 0 || code > 255 {
+                if !(0..=255).contains(&code) {
                     eprintln!("Error: exit code must be between 0 and 255");
                     process::exit(1);
                 }
@@ -55,7 +55,7 @@ fn main() {
 
     match args[1].parse::<i32>() {
         Ok(code) => {
-            if code < 0 || code > 255 {
+            if !(0..=255).contains(&code) {
                 eprintln!("Error: exit code must be between 0 and 255");
                 process::exit(1);
             }

@@ -2,8 +2,8 @@
 use std::collections::HashMap;
 use std::env;
 use std::fs::File;
-use std::io::prelude::BufRead;
 use std::io::BufReader;
+use std::io::prelude::BufRead;
 
 #[derive(Debug)]
 struct WordCounter(HashMap<String, u64>);
@@ -40,7 +40,7 @@ fn main() {
         let line = line.expect("Could not read line");
         let words = line.split(" ");
         for word in words {
-            if word == "" {
+            if word.is_empty() {
                 continue;
             } else {
                 word_counter.increment(word);

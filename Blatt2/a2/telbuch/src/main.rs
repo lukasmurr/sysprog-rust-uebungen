@@ -62,15 +62,13 @@ fn load() -> TelBuch {
     let mut telbuch = TelBuch::new();
     if let Ok(file) = File::open(DATFILE) {
         let reader = BufReader::new(file);
-        for line in reader.lines() {
-            if let Ok(line) = line {
-                let parts: Vec<&str> = line.split('|').collect();
-                if parts.len() == 2 {
-                    telbuch
-                        .entry(parts[0].to_string())
-                        .or_insert_with(Vec::new)
-                        .push(parts[1].to_string());
-                }
+        for line in reader.lines().flatten() {
+            let parts: Vec<&str> = line.split('|').collect();
+            if parts.len() == 2 {
+                telbuch
+                    .entry(parts[0].to_string())
+                    .or_default()
+                    .push(parts[1].to_string());
             }
         }
     }
@@ -88,23 +86,23 @@ fn help() {
 
 fn main() {
     let mut telbuch = TelBuch::new();
-    
+
     println!("Enter 'h' or 'help' for usage.");
-    
+
     loop {
         let cmd = input(b"> ");
-        
+
         // quit with "."
         if cmd.args[0] == "." {
             break;
         }
-        
+
         // help
         if cmd.args[0] == "help" || cmd.args[0] == "h" {
             help();
             continue;
         }
-        
+
         // ! name number
         if cmd.args[0] == "!" {
             if cmd.args.len() >= 3 {
@@ -113,12 +111,12 @@ fn main() {
                 println!("name: {}, number: {}", name, number);
                 telbuch
                     .entry(name.clone())
-                    .or_insert_with(Vec::new)
+                    .or_default()
                     .push(number.clone());
             }
             continue;
         }
-        
+
         // ? name
         if cmd.args[0] == "?" {
             if cmd.args.len() >= 2 {
@@ -134,14 +132,14 @@ fn main() {
             }
             continue;
         }
-        
+
         // save
         if cmd.args[0] == "save" {
             save(&telbuch);
             println!("saved");
             continue;
         }
-        
+
         // load
         if cmd.args[0] == "load" {
             telbuch = load();
