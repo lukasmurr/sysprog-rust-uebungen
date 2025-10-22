@@ -4,10 +4,52 @@
 
 Wintersemester 2025/2026 | <Hubert.Hoegl@tha.de>
 
+2025-10-16
+
 <https://tha.de/~hhoegl/home/SysProgRust>
 
-Tipp: Vollziehen Sie immer alle Beispielprogramme nach, die wir in der 
-Veranstaltung besprochen haben, also `01-*.rs`, `02-*.rs`, u.s.w.
+
+**Hinweise**
+
+* Lesen Sie in **The Book** (https://doc.rust-lang.org/stable/book/)
+  das vierte Kapitel (Ownership, ca. 20 Seiten) und das fünfte Kapitel
+  (Structs, ca. 14 Seiten).  
+
+* Beantworten Sie zur Selbstkontrolle die Quizfragen zu den jeweiligen
+  Kapiteln die Sie im Buch lesen.  Ich habe auf der Homepage der
+  Veranstaltung einen Link drauf, diese sind jedoch nicht interaktiv.
+  Auf der Tutor-Seite sind viele interaktive Fragen, bei denen sie gleich
+  das Ergebnis angezeigt bekommen.  
+
+* Ich möchte gerne dazu ermuntern, in Rust geschriebene Kommandozeilenprogramme
+  (engl. *CLI programs*, CLI = Command Line Interpreter) zu verwenden. Meine
+  Favoriten sind
+
+  - `fd` zum Suchen von Dateien mit bestimmten Namen - <https://github.com/sharkdp/fd>
+  - `ripgrep` (`rg`) zum Suchen in Textdateien - <https://github.com/BurntSushi/ripgrep>
+  - `zellij` Terminal-Multiplexer - <https://zellij.dev>
+  - `helix` Editor - <https://helix-editor.com>
+
+  Es gibt noch viel mehr, in den letzten Jahren habe ich eine Liste erstellt
+  unter <https://tha.de/homes/hhoegl/home/RustTools.html>.
+
+  Auch im Kurs wollen wir hauptsächlich CLI Programme schreiben. Es
+  gibt zwei Cargo Templates vom Tutor J. Knoll die schon einen Rahmen
+  vorgeben, `simple-cli-template` und `subcommand-cli-template`  unter
+  <https://gitlab.com/hhoegl-tha/snp-rs>.  Wer neugierig ist kann
+  sich diese schon mal ansehen.
+
+  Ausserdem gibt es im Buch von Lyu, *Practical Rust Projects* das Kapitel 2,
+  *Building a Command Line Program* (S. 9-38). Sie finden das Buch in unserer
+  Cloud unter <https://cloud.hs-augsburg.de/index.php/s/sZZsinnYBCQmEoe?>, bitte
+  die Sachen nur für den eigenen Gebrauch verwenden. Das ist nur eine Empfehlung
+  falls sich jemand intensiver mit dem Stoff befassen möchte.
+
+* Letzter Hinweis: Bitte halten sie sich wieder an die Vorgabe mit den
+  Verzeichnisnamen, `Blatt2`, etc. Wir wollen die Abgabe-Repositories
+  per Software auswerten, deshalb müssen alle die gleichen Verzeichnisse
+  haben.
+
 
 ## Aufgabe 1 (a1)
 
@@ -26,13 +68,6 @@ Die korrigierte Quelltextdatei legen Sie in den Ordner `Blatt2/a1`.
 
 
 ## Aufgabe 2 (a2)
-
-Wer das "Guessing Game" aus Kapitel 2 noch nicht gemacht hat, der sollte sich
-nun damit beschäftigen. Den Quelltext übertragen Sie wie in Blatt 1 angegeben 
-in das Verzeichnis `Blatt1/a3/`.
-
-
-## Aufgabe 3 (a3)
 
 Schreiben Sie ein kleines Kommandozeilenprogramm, das zum Eingeben und Abfragen
 von Telefonnummern dient.  Ein minimales "User Interface" könnte so
@@ -53,34 +88,36 @@ Stefan` kann man die Nummern abfragen. Falls es den Namen nicht gibt, sollte
 ein passender Kommentar ausgegeben werden. Mit dem Punkt `.` wird das
 Programm beendet. 
 
-Welche weiteren Kommandos könnte man in das Programm einbauen?  Gerne dürfen
-Sie es um weitere Kommandos erweitern, z.B. um eines, mit dem man Einträge
-wieder löschen kann.
+Welche weiteren Kommandos könnte man in das Programm einbauen?  Anregungen
+sind:
+
+* Alle Einträge ausgeben
+* Suchen nach bestimmten Namen
+* Bestimmte Einträge löschen
+
 
 Zunächst sollte man das Programm so schreiben, dass die Einträge nur im 
 Hauptspeicher stehen, folglich sind alle Daten weg, wenn man das Programm 
-beendet. In Python gibt es z.B. das `pickle` Modul, mit dem man eine 
-Datenstruktur in eine Datei schreiben kann, so dass man sie später wieder 
-daraus herstellen kann.  Vielleicht finden Sie sowas ähnliches für die 
-Sprache Rust - gerne auf https://crates.io, https://docs.rs und https://lib.rs
-suchen!  Ein möglicher Kandidat könnte vielleicht **microkv** sein, habe es
-aber noch nicht ausprobiert (siehe https://crates.io/crates/microkv).
-
-Ein Gerüst für das Telefonbuch in Python ist hier: [telbuch.py](telbuch.py).
-Das ist nur zum Vergleich mit ihrer Lösung in Rust hier.  Es war mal eine Aufgabe
-aus einem Python-Kurs, es fehlen also noch ein paar Teile. Sie können ihre
-Lösung in Rust aber aufbauen wie sie wollen. 
+beendet. **In einem zweiten Schritt machen sie die eingegebenen Telefonnummern
+auch persistent, indem sie die Daten in eine Textdatei schreiben und aus dieser
+beim nächsten Programmstart wieder auslesen**. In welchem Format sie die
+Datei beschreiben ist ihnen überlassen.      
 
 Eine Vorschlag für eine Einlesefunktion von der Tastatur ist in 
 [input_loop.rs](input_loop.rs).
 
+Das Rust Crate soll in `Blatt2/a2/telbuch` sein.
+
+Ein Gerüst für das Telefonbuch in Python ist hier: [telbuch.py](telbuch.py). 
+Es war mal eine Aufgabe aus einem Python-Kurs, es fehlen auch ein paar Teile.
+Sie können ihre Lösung in Rust aufbauen wie sie wollen.
 
 
-## Aufgabe 4 (a4)
+## Aufgabe 3 (a3)
 
 Früher haben wir in der Systemnahen Programmierung ein kleines
 Assembler-Programm geschrieben, in dem `main()` nur einen fixen Exit-Code
-(z.B. 5) an den Aufrufer (Shell) zurück gegeben hat. Sonst hat das Programm
+(z.B. 2) an den Aufrufer (Shell) zurück gegeben hat. Sonst hat das Programm
 nichts gemacht.  Der Aufruf sieht dann so aus:
 
 ```bash 
@@ -90,22 +127,22 @@ $ echo $?
 ```
 
 Mit `echo $?` gibt die Shell diesen Exit-Code aus.  Schreiben Sie so 
-ein minimales Programm in Rust.
+ein kleines Programm in Rust.
 
 Erweitern sie ihr Programm nun, so dass sie den gewünschten Exit-Code 
 auf der Kommandozeile als Argument eingeben können:
 
-```bash
-$ ./programm 0
+```bash 
+$ ./programm 2
 $ echo $?
-0
+2
 ```
 
+Sie können auch eine Variante schreiben, die eines der oben erwähnten Templates
+verwendet, so dass sie z.B. so aufrufen: `./programm --exit-code 2`. Es sollte
+dann auch eine Option `-h` bzw. `--help` geben die zu jeder Option einen
+Hilfetext ausgibt. 
 
+Das Rust-Crate soll in `Blatt2/a3/exit` sein.
 
-## Aufgabe 5 (a5)
-
-Lesen Sie in **The Book** (https://doc.rust-lang.org/stable/book/)
-das vierte Kapitel (Ownership, ca. 20 Seiten) und das fünfte Kapitel
-(Structs, ca. 14 Seiten).  
 
