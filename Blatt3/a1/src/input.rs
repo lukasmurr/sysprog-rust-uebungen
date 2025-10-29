@@ -31,7 +31,7 @@ pub fn input_int(msg: Option<&str>) -> i32 {
     value
         .trim()
         .parse::<i32>()
-        .expect(&format!("{} is not a valid number", value))
+        .unwrap_or_else(|_| panic!("{} is not a valid number", value))
 }
 
 /// Reads from `stdin` using the `input` function and
@@ -45,5 +45,5 @@ pub fn input_float(msg: Option<&str>) -> f32 {
     value
         .trim()
         .parse::<f32>()
-        .expect(&format!("{} is not a valid number", value))
+        .unwrap_or_else(|_| panic!("{} is not a valid number", value))
 }
