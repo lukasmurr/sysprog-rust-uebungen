@@ -1,5 +1,5 @@
 use rand::Rng;
-use std::io::{stdin, stdout, Write};
+use std::io::{Write, stdin, stdout};
 use std::time::{Duration, Instant};
 use termion::event::Key;
 use termion::input::TermRead;
