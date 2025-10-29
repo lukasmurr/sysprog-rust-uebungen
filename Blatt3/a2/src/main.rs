@@ -33,7 +33,7 @@ fn main() {
     for key in stdin.keys() {
         let key = key.unwrap();
         match key {
-            Key::Char(c) => {
+            Key::Char(c) if c != '\n' && c != '\r' => {
                 write!(stdout, "{}", c).unwrap();
                 stdout.flush().unwrap();
                 input.push(c);
