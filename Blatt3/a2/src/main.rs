@@ -21,7 +21,7 @@ fn main() {
 
     let start_time = Instant::now();
     let stdin = stdin();
-    for _ in stdin.keys() {
+    if let Some(_) = stdin.keys().next() {
         let reaction = start_time.elapsed();
         write!(
             stdout,
@@ -30,6 +30,5 @@ fn main() {
         )
         .unwrap();
         stdout.flush().unwrap();
-        break;
     }
 }
