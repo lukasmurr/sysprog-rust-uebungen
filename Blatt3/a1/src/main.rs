@@ -6,7 +6,6 @@ fn main() {
     let line = input::input(Some("Geben Sie Zahlen getrennt durch Leerzeichen ein: "));
 
     let numbers: Vec<i32> = line
-        .trim()
         .split_whitespace()
         .filter_map(|s| s.parse::<i32>().ok())
         .collect();
@@ -22,7 +21,7 @@ fn main() {
     let mut sorted = numbers.clone();
     sorted.sort();
     let median = if sorted.len() % 2 == 0 {
-        let mid = sorted.len() / 2;
+        let mid = sorted.len().is_multiple_of(2);
         (sorted[mid - 1] + sorted[mid]) as f64 / 2.0
     } else {
         sorted[sorted.len() / 2] as f64
