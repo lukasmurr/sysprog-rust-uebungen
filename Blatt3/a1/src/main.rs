@@ -8,7 +8,7 @@ fn main() {
     let numbers: Vec<i32> = line
         .trim()
         .split_whitespace()
-        .filter_map(|s| s.parse::<f32>().ok())
+        .filter_map(|s| s.parse::<i32>().ok())
         .collect();
 
     if numbers.is_empty() {
