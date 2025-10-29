@@ -1,6 +1,7 @@
-use std::io::{stdin, stdout, Write};
-use std::time::{Duration, Instant};
 use rand::Rng;
+use std::io::{Write, stdin, stdout};
+use std::time::{Duration, Instant};
+use termion::event::Key;
 use termion::input::TermRead;
 use termion::raw::IntoRawMode;
 
@@ -23,30 +24,48 @@ fn main() {
 
     let a = rng.gen_range(1..=10);
     let b = rng.gen_range(1..=10);
-    let problem = format!("{} + {} = ", a, b);
     let correct_answer = a + b;
-
-    write!(stdout, "{}", problem).unwrap();
+    let mut input = String::new();
+    write!(stdout, "{} + {} = ", a, b).unwrap();
     stdout.flush().unwrap();
 
     let stdin = stdin();
-    let mut input = String::new();
-    stdin.read_line(&mut input).unwrap();
-
-    if let Ok(user_answer) = input.trim().parse::<i32>() {
-        if user_answer == correct_answer {
-            let reaction = start_time.elapsed();
-            write!(
-                stdout,
-                "\r\nRichtig! Reaktionszeit: {:.3} Sekunden\r\n",
-                reaction.as_secs_f64()
-            )
-            .unwrap();
-        } else {
-            write!(stdout, "\r\nFalsch! Die Antwort war: {}\r\n", correct_answer).unwrap();
+    for key in stdin.keys() {
+        let key = key.unwrap();
+        match key {
+            Key::Char(c) => {
+                write!(stdout, "{}", c).unwrap();
+                stdout.flush().unwrap();
+                input.push(c);
+            }
+            Key::Backspace => {
+                input.pop();
+            }
+            Key::Char('\n') | Key::Char('\r') => {
+                if let Ok(user_answer) = input.trim().parse::<i32>() {
+                    if user_answer == correct_answer {
+                        let reaction = start_time.elapsed();
+                        write!(
+                            stdout,
+                            "\r\nRichtig! Reaktionszeit: {:.3} Sekunden\r\n",
+                            reaction.as_secs_f64()
+                        )
+                        .unwrap();
+                    } else {
+                        write!(
+                            stdout,
+                            "\r\nFalsch! Die Antwort war: {}\r\n",
+                            correct_answer
+                        )
+                        .unwrap();
+                    }
+                } else {
+                    write!(stdout, "\r\nFehlerhafte Eingabe!\r\n").unwrap();
+                }
+                stdout.flush().unwrap();
+                break;
+            }
+            _ => {}
         }
-    } else {
-        write!(stdout, "\r\nFehlerhafte Eingabe!\r\n").unwrap();
     }
-    stdout.flush().unwrap();
 }
