@@ -1,5 +1,5 @@
 use rand::Rng;
-use std::io::{Write, stdin, stdout};
+use std::io::{stdin, stdout, Write};
 use std::time::{Duration, Instant};
 use termion::event::Key;
 use termion::input::TermRead;
@@ -57,14 +57,15 @@ fn main() {
                 stdout.flush().unwrap();
                 break;
             }
-        }
-        Key::Char(c) => {
-            write!(stdout, "{}", c).unwrap();
-            stdout.flush().unwrap();
-            input.push(c);
-        }
-        Key::Backspace => {
-            input.pop();
+            Key::Char(c) => {
+                write!(stdout, "{}", c).unwrap();
+                stdout.flush().unwrap();
+                input.push(c);
+            }
+            Key::Backspace => {
+                input.pop();
+            }
+            _ => {}
         }
     }
 }
