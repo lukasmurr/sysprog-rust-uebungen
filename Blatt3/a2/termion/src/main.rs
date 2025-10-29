@@ -11,7 +11,8 @@ fn main() {
     println!("Bereit? Drücken Sie Enter zum Starten...");
 
     let stdin = stdin();
-    stdin.keys().next();
+    let mut buffer = String::new();
+    stdin.read_line(&mut buffer).unwrap();
 
     let mut rng = rand::thread_rng();
     let delay_ms = rng.gen_range(1000..4000);
