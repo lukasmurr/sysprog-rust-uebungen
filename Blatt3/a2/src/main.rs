@@ -43,19 +43,20 @@ fn main() {
                             reaction.as_secs_f64()
                         )
                         .unwrap();
-                } else {
-                    write!(
-                        stdout,
-                        "\r\nFalsch! Die Antwort war: {}\r\n",
-                        correct_answer
-                    )
+                    } else {
+                        write!(
+                            stdout,
+                            "\r\nFalsch! Die Antwort war: {}\r\n",
+                            correct_answer
+                        )
                         .unwrap();
+                    }
+                } else {
+                    write!(stdout, "\r\nFehlerhafte Eingabe!\r\n").unwrap();
                 }
-            } else {
-                write!(stdout, "\r\nFehlerhafte Eingabe!\r\n").unwrap();
+                stdout.flush().unwrap();
+                break;
             }
-            stdout.flush().unwrap();
-            break;
         }
         Key::Char(c) => {
             write!(stdout, "{}", c).unwrap();
