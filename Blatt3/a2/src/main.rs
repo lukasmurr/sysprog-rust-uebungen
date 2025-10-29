@@ -21,7 +21,7 @@ fn main() {
 
     let start_time = Instant::now();
     let stdin = stdin();
-    if let Some(_) = stdin.keys().next() {
+    if stdin.keys().next().is_some() {
         let reaction = start_time.elapsed();
         write!(
             stdout,
