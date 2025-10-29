@@ -1,5 +1,5 @@
 use rand::Rng;
-use std::io::{stdin, stdout, Write};
+use std::io::{Write, stdin, stdout};
 use std::thread;
 use std::time::{Duration, Instant};
 use termion::input::TermRead;
@@ -35,7 +35,7 @@ fn main() {
     let start = Instant::now();
 
     let mut input = String::new();
-    stdin().read_line(&mut input).unwrap();
+    stdin.read_line(&mut input).unwrap();
 
     let reaction_time = start.elapsed();
 
