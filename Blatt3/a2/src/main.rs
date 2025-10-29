@@ -33,7 +33,7 @@ fn main() {
     for key in stdin.keys() {
         let key = key.unwrap();
         match key {
-            Key::Enter => {
+            Key::Char('\n') => {
                 if let Ok(user_answer) = input.trim().parse::<i32>() {
                     if user_answer == correct_answer {
                         let reaction = start_time.elapsed();
