@@ -33,15 +33,7 @@ fn main() {
     for key in stdin.keys() {
         let key = key.unwrap();
         match key {
-            Key::Char(c) if c != '\n' && c != '\r' => {
-                write!(stdout, "{}", c).unwrap();
-                stdout.flush().unwrap();
-                input.push(c);
-            }
-            Key::Backspace => {
-                input.pop();
-            }
-            Key::Char('\n') | Key::Char('\r') => {
+            Key::Enter => {
                 if let Ok(user_answer) = input.trim().parse::<i32>() {
                     if user_answer == correct_answer {
                         let reaction = start_time.elapsed();
@@ -51,21 +43,27 @@ fn main() {
                             reaction.as_secs_f64()
                         )
                         .unwrap();
-                    } else {
-                        write!(
-                            stdout,
-                            "\r\nFalsch! Die Antwort war: {}\r\n",
-                            correct_answer
-                        )
-                        .unwrap();
-                    }
                 } else {
-                    write!(stdout, "\r\nFehlerhafte Eingabe!\r\n").unwrap();
+                    write!(
+                        stdout,
+                        "\r\nFalsch! Die Antwort war: {}\r\n",
+                        correct_answer
+                    )
+                        .unwrap();
                 }
-                stdout.flush().unwrap();
-                break;
+            } else {
+                write!(stdout, "\r\nFehlerhafte Eingabe!\r\n").unwrap();
             }
-            _ => {}
+            stdout.flush().unwrap();
+            break;
+        }
+        Key::Char(c) => {
+            write!(stdout, "{}", c).unwrap();
+            stdout.flush().unwrap();
+            input.push(c);
+        }
+        Key::Backspace => {
+            input.pop();
         }
     }
 }
