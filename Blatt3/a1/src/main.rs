@@ -20,8 +20,8 @@ fn main() {
 
     let mut sorted = numbers.clone();
     sorted.sort();
-    let median = if sorted.len() % 2 == 0 {
-        let mid = sorted.len().is_multiple_of(2) as usize;
+    let median = if sorted.len().is_multiple_of(2) {
+        let mid = sorted.len() / 2;
         (sorted[mid - 1] + sorted[mid]) as f64 / 2.0
     } else {
         sorted[sorted.len() / 2] as f64
