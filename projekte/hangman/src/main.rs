@@ -138,6 +138,12 @@ fn get_random_word() -> String {
 
 // Spiellogik: Hauptfunktion
 fn main() {
+    // ToDo Lukas: Game Menu
+        // TODO: Menü anzeigen
+        // 1. Neues Spiel starten
+        // 2. Leaderboard anzeigen
+        // 3. Spiel beenden
+
     let selected_word = get_random_word();
     println!("{}", selected_word);
 
@@ -147,4 +153,6 @@ fn main() {
         // TODO David: Eingabe verarbeiten und GameState aktualisieren
         // TODO David: Nach Sieg oder Niederlage ausgeben
     }
+    // TODO Lukas: Leaderboard anzeigen
+        // Wenn gewonnen Namen anlegen und im Leaderboard speichern
 }
