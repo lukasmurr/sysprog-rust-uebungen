@@ -3,4 +3,5 @@ Implementierung von Hangman als Comand Line Spiel
 
 Projektmitgleider
 - Lukas Murr (mat: 2186731)
-- David Häckel
+
+- David Häckel (mat: 2186744)
