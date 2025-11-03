@@ -2,64 +2,8 @@ use rand::Rng;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
-const HANGMAN_PICS: [&str; 7] = [
-    "
-  +---+
-  |   |
-      |
-      |
-      |
-      |
-=========",
-    "
-  +---+
-  |   |
-  O   |
-      |
-      |
-      |
-=========",
-    "
-  +---+
-  |   |
-  O   |
-  |   |
-      |
-      |
-=========",
-    "
-  +---+
-  |   |
-  O   |
- /|   |
-      |
-      |
-=========",
-    "
-  +---+
-  |   |
-  O   |
- /|\\  |
-      |
-      |
-=========",
-    "
-  +---+
-  |   |
-  O   |
- /|\\  |
- /    |
-      |
-=========",
-    "
-  +---+
-  |   |
-  O   |
- /|\\  |
- / \\  |
-      |
-=========",
-];
+mod hangman_pics;
+use hangman_pics::HANGMAN_PICS;
 
 // Struct: Spielzustand
 struct GameState {
@@ -108,7 +52,6 @@ impl GameState {
 
     // Galgen anzeigen
     fn display_hangman(&self) {
-        // TODO: Zeige den aktuellen Galgenstand anhand von missed_guesses
         println!("{}", HANGMAN_PICS[self.missed_guesses as usize]);
     }
 }
@@ -146,12 +89,14 @@ fn main() {
 
     let selected_word = get_random_word();
     println!("{}", selected_word);
+    println!("{}", HANGMAN_PICS[0]);
 
     let mut game_state = GameState::new(&selected_word);
     loop {
         // TODO David: Benutzereingabe lesen
         // TODO David: Eingabe verarbeiten und GameState aktualisieren
         // TODO David: Nach Sieg oder Niederlage ausgeben
+        return
     }
     // TODO Lukas: Leaderboard anzeigen
         // Wenn gewonnen Namen anlegen und im Leaderboard speichern
