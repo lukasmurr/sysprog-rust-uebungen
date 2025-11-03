@@ -1,3 +1,7 @@
+use rand::Rng;
+use std::fs::File;
+use std::io::{BufRead, BufReader};
+
 const HANGMAN_PICS: [&str; 7] = [
     "
   +---+
@@ -109,13 +113,38 @@ impl GameState {
     }
 }
 
+// Funktion: Zufälliges Wort aus wordlist auslesen
+// Autor: Lukas Murr
+fn get_random_word() -> String {
+    let file = File::open("src/wordlist").expect("Wörterliste nicht gefunden");
+    let reader = BufReader::new(file);
+
+    let mut words: Vec<String> = Vec::new();
+
+    for line in reader.lines() {
+        let line = line.expect("Zeile könnte nicht gelesen werden");
+        if !line.is_empty() {
+            words.push(line);
+        }
+    }
+
+    if words.is_empty() {
+        panic!("Keine Wörter in der Wörterliste gefunden");
+    }
+
+    let random_index = rand::rng().random_range(0..words.len());
+    words[random_index].clone()
+}
+
 // Spiellogik: Hauptfunktion
 fn main() {
-    // TODO: Liste der Wörter definieren
-    // TODO: Zufälliges Wort auswählen
-    // TODO: GameState initialisieren
-    // TODO: Spiel-Schleife starten
-    // TODO: Benutzereingabe lesen
-    // TODO: Eingabe verarbeiten und GameState aktualisieren
-    // TODO: Nach Sieg oder Niederlage ausgeben
+    let selected_word = get_random_word();
+    println!("{}", selected_word);
+
+    let mut game_state = GameState::new(&selected_word);
+    loop {
+        // TODO David: Benutzereingabe lesen
+        // TODO David: Eingabe verarbeiten und GameState aktualisieren
+        // TODO David: Nach Sieg oder Niederlage ausgeben
+    }
 }
