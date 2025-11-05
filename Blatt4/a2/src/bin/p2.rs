@@ -1,6 +1,6 @@
-use std::time::Duration;
-use std::thread;
 use std::io::{self, BufRead, BufReader};
+use std::thread;
+use std::time::Duration;
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();

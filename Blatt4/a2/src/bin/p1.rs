@@ -1,9 +1,9 @@
-use std::process::{Command, Stdio};
-use std::thread;
-use std::time::{Instant};
-use std::io::Write;
 use std::io::Read;
+use std::io::Write;
+use std::process::{Command, Stdio};
 use std::sync::mpsc;
+use std::thread;
+use std::time::Instant;
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
@@ -19,23 +19,31 @@ fn main() {
 
     // Test: Exit-Code
     let exit_code = 42;
-    let output = Command::new(&bin)
-        .arg("-e").arg(exit_code.to_string())
-        .output().unwrap();
+    let _output = Command::new(&bin)
+        .arg("-e")
+        .arg(exit_code.to_string())
+        .output()
+        .unwrap();
     println!("exit code ok: {}", output.status.code() == Some(exit_code));
 
     // Test: Delay
     let delay = 2;
     let start = Instant::now();
     let output = Command::new(&bin)
-        .arg("-d").arg(delay.to_string())
-        .arg("-e").arg("0")
-        .output().unwrap();
+        .arg("-d")
+        .arg(delay.to_string())
+        .arg("-e")
+        .arg("0")
+        .output()
+        .unwrap();
     let elapsed = start.elapsed().as_secs();
-    println!("delay ok: {}", elapsed >= delay as u64 && elapsed < delay as u64 + 1);
+    println!(
+        "delay ok: {}",
+        elapsed >= delay as u64 && elapsed < delay as u64 + 1
+    );
 
     // Test: Echo
-    let (tx, rx): (mpsc::Sender<()>, mpsc::Receiver<()>) = mpsc::channel();
+    let (_tx, _rx): (mpsc::Sender<()>, mpsc::Receiver<()>) = mpsc::channel();
     let mut child = Command::new(bin)
         .arg("--echo")
         .stdin(Stdio::piped())
