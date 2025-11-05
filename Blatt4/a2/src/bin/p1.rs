@@ -29,7 +29,7 @@ fn main() {
     // Test: Delay
     let delay = 2;
     let start = Instant::now();
-    let output = Command::new(&bin)
+    let _output = Command::new(&bin)
         .arg("-d")
         .arg(delay.to_string())
         .arg("-e")
