@@ -19,7 +19,7 @@ fn main() {
 
     // Test: Exit-Code
     let exit_code = 42;
-    let _output = Command::new(&bin)
+    let output = Command::new(&bin)
         .arg("-e")
         .arg(exit_code.to_string())
         .output()
