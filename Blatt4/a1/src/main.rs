@@ -1,5 +1,5 @@
-use std::fs::read_to_string;
 use rand::prelude::*;
+use std::fs::read_to_string;
 
 fn choose_line(filename: &str) -> String {
     let content = read_to_string(filename).expect("Datei konnte nicht gelesen werden.");
