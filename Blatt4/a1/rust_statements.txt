@@ -1,0 +1,8 @@
+Rust ist sehr performant und sicher.
+Rust ist hervorragend für Systems- und Einbettungsprogrammierung geeignet.
+Rust-Compiler kann viele Fehler zur Compile-Zeit erkennen.
+Rust ist ideal für Performanzkritische Anwendungen.
+Rust ist schwieriger zu lernen als viele dynamische Sprachen.
+Rust hat mehr overhead als Python
+Rust hat mit Ferris ein cooles Maskottchen!
+Rust ist schwerer lesbar als Java, C# oder Python
