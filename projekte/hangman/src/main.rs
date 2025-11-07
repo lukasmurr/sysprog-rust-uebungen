@@ -1,6 +1,6 @@
 use rand::Rng;
-use std::fs::File;
-use std::io::{self, BufRead, BufReader};
+use std::fs::{File, OpenOptions};
+use std::io::{self, BufRead, BufReader, Write};
 
 mod hangman_pics;
 use hangman_pics::HANGMAN_PICS;
@@ -117,6 +117,42 @@ fn get_random_word() -> String {
     words[random_index].to_lowercase().clone()
 }
 
+// Speichere einen Eintrag ins Leaderboard (Datei: src/leaderboard)
+fn save_leaderboard_entry(name: &str, missed_guesses: usize) {
+    let path = "src/leaderboard";
+    let mut file = OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(path)
+        .expect("Konnte Leaderboard-Datei nicht öffnen");
+    writeln!(file, "{}:{}", name, missed_guesses).expect("Konnte Eintrag nicht schreiben");
+}
+
+// Zeige das Leaderboard an, falls vorhanden
+fn display_leaderboard() {
+    let path = "src/leaderboard";
+    let file = File::open(path);
+    match file {
+        Ok(f) => {
+            let reader = BufReader::new(f);
+            println!("\n--- Leaderboard ---");
+            for (i, line) in reader.lines().enumerate() {
+                if let Ok(entry) = line {
+                    // Format: name:missed
+                    let parts: Vec<&str> = entry.splitn(2, ':').collect();
+                    if parts.len() == 2 {
+                        println!("{}. {} (Fehler: {})", i + 1, parts[0], parts[1]);
+                    } else {
+                        println!("{}. {}", i + 1, entry);
+                    }
+                }
+            }
+            println!("-------------------\n");
+        }
+        Err(_) => println!("Kein Leaderboard vorhanden."),
+    }
+}
+
 fn user_guess(wrong_input: bool) -> char {
     if wrong_input {
         println!("Das war kein einzelner Buchstabe! Versuchs nochmal: ")
@@ -162,6 +198,20 @@ fn main() {
         if game_state.has_won() {
             println!("gewonnen");
             println!("Das Wort war: {}", game_state.word);
+            
+            println!("Gib deinen Namen fürs Leaderboard ein (leer lassen = nicht speichern):");
+            let mut name = String::new();
+            io::stdin()
+                .read_line(&mut name)
+                .expect("Fehler beim Lesen des Namens");
+            let name = name.trim();
+            if !name.is_empty() {
+                save_leaderboard_entry(name, game_state.missed_guesses);
+                println!("Eintrag gespeichert.");
+            } else {
+                println!("Kein Name eingegeben, nicht gespeichert.");
+            }
+            display_leaderboard();
             break;
         }
         if game_state.has_lost() {
@@ -170,6 +220,4 @@ fn main() {
             break;
         }
     }
-    // TODO Lukas: Leaderboard anzeigen
-    // Wenn gewonnen Namen anlegen und im Leaderboard speichern
 }
