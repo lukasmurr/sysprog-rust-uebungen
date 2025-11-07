@@ -43,31 +43,31 @@ impl GameState {
             self.missed_guesses += 1;
         }
         // Gib true, falls Buchstabe im Wort, sonst false
-        return rigth_guess;
+        rigth_guess
     }
 
     // Gewinn-Prüfung
     // Autor: David
     fn has_won(&self) -> bool {
-        return !self.char_array.contains(&char::from('_'));
+        !self.char_array.contains(&'_')
     }
 
     // Verlust-Prüfung
     // Autor: David
     fn has_lost(&self) -> bool {
-        return self.missed_guesses >= HANGMAN_PICS.len();
+        self.missed_guesses >= HANGMAN_PICS.len()
     }
     
     // Ausgabe des aktuellen Wortes (mit Unterstrichen für ungeratene Buchstaben)
     // Autor: David
     fn display_word(&self) -> String {
         let joined: String = self.char_array.iter().map(|c| c.to_string()).collect::<Vec<String>>().join(" ");
-        return joined;
+        joined
     }
     
     // Galgen anzeigen
     fn display_hangman(&self) {
-        println!("{}", HANGMAN_PICS[self.missed_guesses as usize]);
+        println!("{}", HANGMAN_PICS[self.missed_guesses]);
     }
 
     // Autor: David
@@ -79,7 +79,7 @@ impl GameState {
                 positions.push(i);
             }
         }
-        if positions.len() == 0{
+        if positions.is_empty(){
             self.missed_guesses += 1;
             return false;
         }
@@ -87,7 +87,7 @@ impl GameState {
         for position in positions{
             self.char_array[position] = c; 
         }
-        return true;
+        true
     }
 }
 
@@ -129,7 +129,7 @@ fn user_guess(wrong_input: bool) -> char{
         Err(_) => user_guess(true),
     };
 
-    return  guess;
+    guess
 }
 
 
