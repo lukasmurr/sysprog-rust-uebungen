@@ -7,11 +7,11 @@ use hangman_pics::HANGMAN_PICS;
 
 // Struct: Spielzustand
 struct GameState {
-    word: String,             // zu erratendes Wort
-    guessed_chars: Vec<char>, // bereits geratene Buchstaben
+    word: String,               // zu erratendes Wort
+    guessed_chars: Vec<char>,   // bereits geratene Buchstaben
     missed_guesses: usize,      // Anzahl Fehlversuche
-    missing_chars_count: usize  ,// Anzahl nicht erratener Buchstaben
-    char_array: Vec<char>
+    missing_chars_count: usize, // Anzahl nicht erratener Buchstaben
+    char_array: Vec<char>,
 }
 
 // Implementierung: Methoden für GameState
@@ -31,7 +31,7 @@ impl GameState {
     // Autor: David
     fn guess_letter(&mut self, letter: char) -> bool {
         // TODO: Prüfe, ob Buchstabe bereits geraten
-        if self.guessed_chars.contains(&letter){
+        if self.guessed_chars.contains(&letter) {
             println!("Der Buchstabe wurde bereits versucht");
             return false;
         }
@@ -39,7 +39,7 @@ impl GameState {
         self.guessed_chars.push(letter);
         let rigth_guess = self.update_array(letter);
         // Erhöhe missed_guesses, falls nicht gefunden
-        if !rigth_guess{
+        if !rigth_guess {
             self.missed_guesses += 1;
         }
         // Gib true, falls Buchstabe im Wort, sonst false
@@ -57,14 +57,19 @@ impl GameState {
     fn has_lost(&self) -> bool {
         self.missed_guesses >= HANGMAN_PICS.len()
     }
-    
+
     // Ausgabe des aktuellen Wortes (mit Unterstrichen für ungeratene Buchstaben)
     // Autor: David
     fn display_word(&self) -> String {
-        let joined: String = self.char_array.iter().map(|c| c.to_string()).collect::<Vec<String>>().join(" ");
+        let joined: String = self
+            .char_array
+            .iter()
+            .map(|c| c.to_string())
+            .collect::<Vec<String>>()
+            .join(" ");
         joined
     }
-    
+
     // Galgen anzeigen
     fn display_hangman(&self) {
         println!("{}", HANGMAN_PICS[self.missed_guesses]);
@@ -72,20 +77,20 @@ impl GameState {
 
     // Autor: David
     // geratene Buchstaben aktualisieren
-    fn update_array(&mut self, c: char) -> bool{
+    fn update_array(&mut self, c: char) -> bool {
         let mut positions = Vec::<usize>::new();
-        for (i, word_char) in self.word.chars().enumerate(){
-            if word_char == c{
+        for (i, word_char) in self.word.chars().enumerate() {
+            if word_char == c {
                 positions.push(i);
             }
         }
-        if positions.is_empty(){
+        if positions.is_empty() {
             self.missed_guesses += 1;
             return false;
         }
         self.missing_chars_count -= positions.len();
-        for position in positions{
-            self.char_array[position] = c; 
+        for position in positions {
+            self.char_array[position] = c;
         }
         true
     }
@@ -114,15 +119,16 @@ fn get_random_word() -> String {
     words[random_index].to_lowercase().clone()
 }
 
-fn user_guess(wrong_input: bool) -> char{
-    if wrong_input{
+fn user_guess(wrong_input: bool) -> char {
+    if wrong_input {
         println!("Das war kein einzelner Buchstabe! Versuchs nochmal: ")
-    }
-    else {
+    } else {
         println!("Rate einen Buchstaben");
     }
     let mut c = String::new();
-    io::stdin().read_line(&mut c).expect("Da ist leider etwas schiefgelaufen!");
+    io::stdin()
+        .read_line(&mut c)
+        .expect("Da ist leider etwas schiefgelaufen!");
 
     let guess: char = match c.trim().parse() {
         Ok(c) => c,
@@ -132,40 +138,38 @@ fn user_guess(wrong_input: bool) -> char{
     guess
 }
 
-
 // Spiellogik: Hauptfunktion
 fn main() {
     // ToDo Lukas: Game Menu
-        // TODO: Menü anzeigen
-        // 1. Neues Spiel starten
-        // 2. Leaderboard anzeigen
-        // 3. Spiel beenden
+    // TODO: Menü anzeigen
+    // 1. Neues Spiel starten
+    // 2. Leaderboard anzeigen
+    // 3. Spiel beenden
 
     let selected_word = get_random_word();
     // println!("{}", selected_word);
 
-    
     let mut game_state = GameState::new(&selected_word);
     // Platzhalter array erstellen und mit Platzhaltern füllen.
     loop {
         // Aktuellen Spielstand ausgeben und Array mit Spielstand anzeigen
         game_state.display_hangman();
-        println!("{}",game_state.display_word());
+        println!("{}", game_state.display_word());
         // println!("{}", game_state.display_word());
         // David: Benutzereingabe lesen
         let c = user_guess(false);
         game_state.guess_letter(c);
         // David: Eingabe verarbeiten und GameState aktualisieren
         // David: Nach Sieg oder Niederlage ausgeben
-        if game_state.has_won(){
+        if game_state.has_won() {
             println!("gewonnen");
             break;
         }
-        if game_state.has_lost(){
+        if game_state.has_lost() {
             println!("verloren");
             break;
         }
     }
     // TODO Lukas: Leaderboard anzeigen
-        // Wenn gewonnen Namen anlegen und im Leaderboard speichern
+    // Wenn gewonnen Namen anlegen und im Leaderboard speichern
 }
