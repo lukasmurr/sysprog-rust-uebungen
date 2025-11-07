@@ -28,30 +28,41 @@ impl GameState {
     }
 
     // Buchstaben prüfen
+    // Autor: David
     fn guess_letter(&mut self, letter: char) -> bool {
         // TODO: Prüfe, ob Buchstabe bereits geraten
-        // TODO: Prüfe, ob Buchstabe im Wort enthalten und füge zu guessed_chars hinzu
-        // TODO: Erhöhe missed_guesses, falls nicht gefunden
-        // TODO: Gib true, falls Buchstabe im Wort, sonst false
-        true
+        if self.guessed_chars.contains(&letter){
+            println!("Der Buchstabe wurde bereits versucht");
+            return false;
+        }
+        // Prüfe, ob Buchstabe im Wort enthalten und füge zu guessed_chars hinzu
+        self.guessed_chars.push(letter);
+        let rigth_guess = self.update_array(letter);
+        // Erhöhe missed_guesses, falls nicht gefunden
+        if !rigth_guess{
+            self.missed_guesses += 1;
+        }
+        // Gib true, falls Buchstabe im Wort, sonst false
+        return rigth_guess;
     }
 
     // Gewinn-Prüfung
+    // Autor: David
     fn has_won(&self) -> bool {
-        // TODO: Prüfe, ob alle Buchstaben gefunden sind
-        false
+        return !self.char_array.contains(&char::from('_'));
     }
 
     // Verlust-Prüfung
+    // Autor: David
     fn has_lost(&self) -> bool {
-        // TODO: Prüfe, ob Anzahl Fehlversuche zu hoch
-        false
+        return self.missed_guesses >= HANGMAN_PICS.len();
     }
     
     // Ausgabe des aktuellen Wortes (mit Unterstrichen für ungeratene Buchstaben)
+    // Autor: David
     fn display_word(&self) -> String {
-        // TODO: Zeige Wort mit _ für ungeratene Buchstaben
-        String::new()
+        let joined: String = self.char_array.iter().map(|c| c.to_string()).collect::<Vec<String>>().join(" ");
+        return joined;
     }
     
     // Galgen anzeigen
@@ -60,18 +71,19 @@ impl GameState {
     }
 
     // Autor: David
+    // geratene Buchstaben aktualisieren
     fn update_array(&mut self, c: char) -> bool{
-        println!("{}", self.word);
         let mut positions = Vec::<usize>::new();
         for (i, word_char) in self.word.chars().enumerate(){
             if word_char == c{
-                println!("{}", word_char);
                 positions.push(i);
             }
         }
         if positions.len() == 0{
+            self.missed_guesses += 1;
             return false;
         }
+        self.missing_chars_count -= positions.len();
         for position in positions{
             self.char_array[position] = c; 
         }
@@ -102,11 +114,6 @@ fn get_random_word() -> String {
     words[random_index].to_lowercase().clone()
 }
 
-fn get_chars_as_string(chars: &Vec<char>) -> String{
-    let joined: String = chars.iter().map(|c| c.to_string()).collect::<Vec<String>>().join(" ");
-    return joined;
-}
-
 fn user_guess(wrong_input: bool) -> char{
     if wrong_input{
         println!("Das war kein einzelner Buchstabe! Versuchs nochmal: ")
@@ -135,25 +142,29 @@ fn main() {
         // 3. Spiel beenden
 
     let selected_word = get_random_word();
-    println!("{}", selected_word);
+    // println!("{}", selected_word);
 
     
     let mut game_state = GameState::new(&selected_word);
     // Platzhalter array erstellen und mit Platzhaltern füllen.
     loop {
         // Aktuellen Spielstand ausgeben und Array mit Spielstand anzeigen
-        println!("{}", HANGMAN_PICS[game_state.missed_guesses]);
-        println!("{}", get_chars_as_string(&game_state.char_array));
-        // TODO David: Benutzereingabe lesen
+        game_state.display_hangman();
+        println!("{}",game_state.display_word());
+        // println!("{}", game_state.display_word());
+        // David: Benutzereingabe lesen
         let c = user_guess(false);
-        let right_guess = game_state.update_array(c);
-        if !right_guess{
-            game_state.missed_guesses += 1;
+        game_state.guess_letter(c);
+        // David: Eingabe verarbeiten und GameState aktualisieren
+        // David: Nach Sieg oder Niederlage ausgeben
+        if game_state.has_won(){
+            println!("gewonnen");
+            break;
         }
-        // TODO David: Eingabe verarbeiten und GameState aktualisieren
-        // TODO David: Nach Sieg oder Niederlage ausgeben
-        println!("{}", get_chars_as_string(&game_state.char_array));
-        return
+        if game_state.has_lost(){
+            println!("verloren");
+            break;
+        }
     }
     // TODO Lukas: Leaderboard anzeigen
         // Wenn gewonnen Namen anlegen und im Leaderboard speichern
