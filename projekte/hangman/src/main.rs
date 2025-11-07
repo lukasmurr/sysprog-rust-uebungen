@@ -30,7 +30,6 @@ impl GameState {
     // Buchstaben prüfen
     // Autor: David
     fn guess_letter(&mut self, letter: char) -> bool {
-        // TODO: Prüfe, ob Buchstabe bereits geraten
         if self.guessed_chars.contains(&letter) {
             println!("Der Buchstabe wurde bereits versucht");
             return false;
@@ -85,7 +84,6 @@ impl GameState {
             }
         }
         if positions.is_empty() {
-            self.missed_guesses += 1;
             return false;
         }
         self.missing_chars_count -= positions.len();
@@ -163,10 +161,12 @@ fn main() {
         // David: Nach Sieg oder Niederlage ausgeben
         if game_state.has_won() {
             println!("gewonnen");
+            println!("Das Wort war: {}", game_state.word);
             break;
         }
         if game_state.has_lost() {
             println!("verloren");
+            println!("Das Wort war: {}", game_state.word);
             break;
         }
     }
