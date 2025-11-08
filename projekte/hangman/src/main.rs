@@ -179,7 +179,9 @@ fn main() {
     // Einfaches Startmenü: Enter = Spiel starten, 'l' = Leaderboard, '+' = Wort hinzufügen, 'q' = beenden
     loop {
         println!("\n=== Hangman ===");
-        println!("Drücke Enter um zu starten, 'l' für Leaderboard, '+' um ein Wort hinzuzufügen, 'q' zum Beenden.");
+        println!(
+            "Drücke Enter um zu starten, 'l' für Leaderboard, '+' um ein Wort hinzuzufügen, 'q' zum Beenden."
+        );
         let mut choice = String::new();
         io::stdin()
             .read_line(&mut choice)
