@@ -1,6 +1,6 @@
 use rand::Rng;
-use std::fs::File;
-use std::io::{self, BufRead, BufReader};
+use std::fs::{File, OpenOptions};
+use std::io::{self, BufRead, BufReader, Write};
 
 mod hangman_pics;
 use hangman_pics::HANGMAN_PICS;
@@ -30,7 +30,6 @@ impl GameState {
     // Buchstaben prüfen
     // Autor: David
     fn guess_letter(&mut self, letter: char) -> bool {
-        // TODO: Prüfe, ob Buchstabe bereits geraten
         if self.guessed_chars.contains(&letter) {
             println!("Der Buchstabe wurde bereits versucht");
             return false;
@@ -85,7 +84,6 @@ impl GameState {
             }
         }
         if positions.is_empty() {
-            self.missed_guesses += 1;
             return false;
         }
         self.missing_chars_count -= positions.len();
@@ -119,6 +117,43 @@ fn get_random_word() -> String {
     words[random_index].to_lowercase().clone()
 }
 
+// Lukas Murr
+// Speichere einen Eintrag im Leaderboard
+fn save_leaderboard_entry(name: &str, missed_guesses: usize) {
+    let path = "src/leaderboard";
+    let mut file = OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(path)
+        .expect("Konnte Leaderboard-Datei nicht öffnen");
+    writeln!(file, "{}:{}", name, missed_guesses).expect("Konnte Eintrag nicht schreiben");
+}
+
+// Lukas Murr
+fn display_leaderboard() {
+    let path = "src/leaderboard";
+    let file = File::open(path);
+    match file {
+        Ok(f) => {
+            let reader = BufReader::new(f);
+            println!("\n--- Leaderboard ---");
+            for (i, line) in reader.lines().enumerate() {
+                if let Ok(entry) = line {
+                    let parts: Vec<&str> = entry.splitn(2, ':').collect();
+                    if parts.len() == 2 {
+                        println!("{}. {} (Fehler: {})", i + 1, parts[0], parts[1]);
+                    } else {
+                        println!("{}. {}", i + 1, entry);
+                    }
+                }
+            }
+            println!("-------------------\n");
+        }
+        Err(_) => println!("Kein Leaderboard vorhanden."),
+    }
+}
+
+// David Häckel
 fn user_guess(wrong_input: bool) -> char {
     if wrong_input {
         println!("Das war kein einzelner Buchstabe! Versuchs nochmal: ")
@@ -140,36 +175,90 @@ fn user_guess(wrong_input: bool) -> char {
 
 // Spiellogik: Hauptfunktion
 fn main() {
-    // ToDo Lukas: Game Menu
-    // TODO: Menü anzeigen
-    // 1. Neues Spiel starten
-    // 2. Leaderboard anzeigen
-    // 3. Spiel beenden
-
-    let selected_word = get_random_word();
-    // println!("{}", selected_word);
-
-    let mut game_state = GameState::new(&selected_word);
-    // Platzhalter array erstellen und mit Platzhaltern füllen.
+    // Einfaches Startmenü: Enter = Spiel starten, 'l' = Leaderboard, '+' = Wort hinzufügen, 'q' = beenden
     loop {
-        // Aktuellen Spielstand ausgeben und Array mit Spielstand anzeigen
-        game_state.display_hangman();
-        println!("{}", game_state.display_word());
-        // println!("{}", game_state.display_word());
-        // David: Benutzereingabe lesen
-        let c = user_guess(false);
-        game_state.guess_letter(c);
-        // David: Eingabe verarbeiten und GameState aktualisieren
-        // David: Nach Sieg oder Niederlage ausgeben
-        if game_state.has_won() {
-            println!("gewonnen");
-            break;
-        }
-        if game_state.has_lost() {
-            println!("verloren");
-            break;
+        println!("\n=== Hangman ===");
+        println!(
+            "Drücke Enter um zu starten, 'l' für Leaderboard, '+' um ein Wort hinzuzufügen, 'q' zum Beenden."
+        );
+        let mut choice = String::new();
+        io::stdin()
+            .read_line(&mut choice)
+            .expect("Fehler beim Lesen der Eingabe");
+        let choice = choice.trim();
+
+        match choice {
+            "" => {
+                // Spiel starten
+                let selected_word = get_random_word();
+                let mut game_state = GameState::new(&selected_word);
+                loop {
+                    // David
+                    // Aktuellen Spielstand ausgeben und Array mit Spielstand anzeigen
+                    game_state.display_hangman();
+                    println!("{}", game_state.display_word());
+                    // Benutzereingabe lesen
+                    let c = user_guess(false);
+                    game_state.guess_letter(c);
+                    // Nach Sieg oder Niederlage ausgeben
+                    if game_state.has_won() {
+                        println!("gewonnen");
+                        println!("Das Wort war: {}", game_state.word);
+
+                        println!(
+                            "Gib deinen Namen fürs Leaderboard ein (leer lassen = nicht speichern):"
+                        );
+                        let mut name = String::new();
+                        io::stdin()
+                            .read_line(&mut name)
+                            .expect("Fehler beim Lesen des Namens");
+                        let name = name.trim();
+                        if !name.is_empty() {
+                            save_leaderboard_entry(name, game_state.missed_guesses);
+                            println!("Eintrag gespeichert.");
+                        } else {
+                            println!("Kein Name eingegeben, nicht gespeichert.");
+                        }
+                        display_leaderboard();
+                        break;
+                    }
+                    if game_state.has_lost() {
+                        println!("verloren");
+                        println!("Das Wort war: {}", game_state.word);
+                        break;
+                    }
+                }
+            }
+            "l" | "L" => {
+                display_leaderboard();
+            }
+            "+" => {
+                println!("Gib ein neues Wort ein (leer = abbrechen):");
+                let mut new_word = String::new();
+                io::stdin()
+                    .read_line(&mut new_word)
+                    .expect("Fehler beim Lesen");
+                let new_word = new_word.trim().to_lowercase();
+                if new_word.is_empty() {
+                    println!("Abgebrochen.");
+                } else {
+                    let path = "src/wordlist";
+                    let mut file = OpenOptions::new()
+                        .create(true)
+                        .append(true)
+                        .open(path)
+                        .expect("Konnte Wortliste nicht öffnen");
+                    writeln!(file, "{}", new_word).expect("Konnte Wort nicht schreiben");
+                    println!("Wort hinzugefügt: {}", new_word);
+                }
+            }
+            "q" | "Q" => {
+                println!("Beende das Spiel. Auf Wiedersehen!");
+                break;
+            }
+            _ => {
+                println!("Ungültige Eingabe. Bitte Enter, 'l', '+' oder 'q' verwenden.");
+            }
         }
     }
-    // TODO Lukas: Leaderboard anzeigen
-    // Wenn gewonnen Namen anlegen und im Leaderboard speichern
 }
