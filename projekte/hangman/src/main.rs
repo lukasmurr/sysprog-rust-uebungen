@@ -198,7 +198,7 @@ fn main() {
         if game_state.has_won() {
             println!("gewonnen");
             println!("Das Wort war: {}", game_state.word);
-            
+
             println!("Gib deinen Namen fürs Leaderboard ein (leer lassen = nicht speichern):");
             let mut name = String::new();
             io::stdin()
