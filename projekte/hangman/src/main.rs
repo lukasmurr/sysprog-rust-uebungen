@@ -139,7 +139,6 @@ fn display_leaderboard() {
             println!("\n--- Leaderboard ---");
             for (i, line) in reader.lines().enumerate() {
                 if let Ok(entry) = line {
-                    // Format: name:missed
                     let parts: Vec<&str> = entry.splitn(2, ':').collect();
                     if parts.len() == 2 {
                         println!("{}. {} (Fehler: {})", i + 1, parts[0], parts[1]);
