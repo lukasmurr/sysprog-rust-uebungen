@@ -3,7 +3,7 @@ use aes_gcm::{
     Aes256Gcm, Nonce,
 };
 use pbkdf2::pbkdf2;
-use rand::{rngs::OsRng, RngCore};
+use rand::{RngCore, rngs::OsRng};
 use sha2::Sha256;
 
 use crate::error::SecureZipError;
@@ -15,7 +15,7 @@ const ITERATIONS: u32 = 600_000;
 
 fn derive_key(password: &str, salt: &[u8]) -> [u8; KEY_LEN] {
     let mut key = [0u8; KEY_LEN];
-    pbkdf2::<hmac::Hmac<Sha256>>(password.as_bytes(), salt, ITERATIONS, &mut key);
+    let _ = pbkdf2::<hmac::Hmac<Sha256>>(password.as_bytes(), salt, ITERATIONS, &mut key);
     key
 }
 
