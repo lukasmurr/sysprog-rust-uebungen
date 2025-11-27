@@ -44,7 +44,9 @@ pub fn encrypt(data: &[u8], password: &str) -> Result<Vec<u8>, SecureZipError> {
 
 pub fn decrypt(data: &[u8], password: &str) -> Result<Vec<u8>, SecureZipError> {
     if data.len() < SALT_LEN + NONCE_LEN {
-        return Err(SecureZipError::Crypto("Data too short to contain salt and nonce".to_string()));
+        return Err(SecureZipError::Crypto(
+            "Data too short to contain salt and nonce".to_string(),
+        ));
     }
 
     let (salt, rest) = data.split_at(SALT_LEN);
