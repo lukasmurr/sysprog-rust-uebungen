@@ -1,3 +1,8 @@
+mod archive;
+mod compression;
+mod crypto;
+mod error;
+
 // TODO [David]: Define CLI arguments using `clap`.
 // Structure:
 // securezip [COMMAND] [ARGS]

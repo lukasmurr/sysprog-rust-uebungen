@@ -62,3 +62,53 @@ pub fn decrypt(data: &[u8], password: &str) -> Result<Vec<u8>, SecureZipError> {
 
     Ok(plaintext)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_encrypt_decrypt() {
+        let data = b"Hello, world!";
+        let password = "secure_password";
+
+        let encrypted = encrypt(data, password).expect("Encryption failed");
+        let decrypted = decrypt(&encrypted, password).expect("Decryption failed");
+
+        assert_eq!(data, &decrypted[..]);
+    }
+
+    #[test]
+    fn test_decrypt_wrong_password() {
+        let data = b"Secret data";
+        let password = "password123";
+        let wrong_password = "password321";
+
+        let encrypted = encrypt(data, password).expect("Encryption failed");
+        let result = decrypt(&encrypted, wrong_password);
+
+        assert!(matches!(result, Err(SecureZipError::InvalidPassword)));
+    }
+
+    #[test]
+    fn test_decrypt_corrupted_data() {
+        let data = b"Important info";
+        let password = "pass";
+
+        let mut encrypted = encrypt(data, password).expect("Encryption failed");
+        // Corrupt the last byte
+        let len = encrypted.len();
+        encrypted[len - 1] ^= 0xFF;
+
+        let result = decrypt(&encrypted, password);
+        assert!(matches!(result, Err(SecureZipError::InvalidPassword)));
+    }
+
+    #[test]
+    fn test_short_data() {
+        let data = vec![0u8; 10]; // Too short for salt + nonce
+        let password = "pass";
+        let result = decrypt(&data, password);
+        assert!(matches!(result, Err(SecureZipError::Crypto(_))));
+    }
+}
