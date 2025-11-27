@@ -1,8 +1,22 @@
-// TODO [Lukas]: Define a custom Error type using `thiserror`.
-// Include variants for:
-// - Io(std::io::Error)
-// - Compression(std::io::Error)
-// - Crypto(aes_gcm::Error) or generic string error
-// - Archive(std::io::Error)
-// - InvalidPassword
-// - Unknown
+use thiserror::Error;
+
+#[derive(Error, Debug)]
+pub enum SecureZipError {
+    #[error("IO error: {0}")]
+    Io(#[from] std::io::Error),
+
+    #[error("Compression error: {0}")]
+    Compression(String),
+
+    #[error("Cryptographic error: {0}")]
+    Crypto(String),
+
+    #[error("Archive error: {0}")]
+    Archive(String),
+
+    #[error("Invalid password")]
+    InvalidPassword,
+
+    #[error("Unknown error: {0}")]
+    Unknown(String),
+}
