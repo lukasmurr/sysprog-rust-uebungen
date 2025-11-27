@@ -34,9 +34,7 @@ impl Iterator for PasswordsIterator {
 
     fn next(&mut self) -> Option<Self::Item> {
         let mut rng = rand::thread_rng();
-        let password: String = (0..self.length)
-            .map(|_| rng.gen_range('a'..='z'))
-            .collect();
+        let password: String = (0..self.length).map(|_| rng.gen_range('a'..='z')).collect();
         Some(password)
     }
 }

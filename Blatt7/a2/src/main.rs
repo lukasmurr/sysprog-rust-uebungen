@@ -12,7 +12,7 @@ impl Iterator for Collatz {
 
         if current == 1 {
             self.0 = 0;
-        } else if current % 2 == 0 {
+        } else if current.is_multiple_of(2) {
             self.0 = current / 2;
         } else {
             self.0 = 3 * current + 1;

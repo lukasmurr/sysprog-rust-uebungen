@@ -9,7 +9,7 @@ fn most_frequent(numbers: &[i32]) -> i32 {
     numbers
         .iter() // Erstellt einen Iterator über die Referenzen der Zahlen (&i32)
         .copied() // Kopiert die Werte, um i32 statt &i32 zu erhalten
-        .group_by(|x| *x) // Gruppiert aufeinanderfolgende gleiche Elemente. Da der Vektor sortiert ist, werden alle gleichen Zahlen gruppiert.
+        .chunk_by(|x| *x) // Gruppiert aufeinanderfolgende gleiche Elemente. Da der Vektor sortiert ist, werden alle gleichen Zahlen gruppiert.
         .into_iter() // Wandelt die GroupBy-Struktur in einen Iterator um, der (Key, Group) Paare liefert
         .map(|(k, v)| (k, v.count())) // Wandelt jedes Paar in (Zahl, Anzahl) um. v.count() konsumiert den Gruppen-Iterator.
         .max_by_key(|(_, v)| *v) // Sucht das Element mit der höchsten Anzahl (v)

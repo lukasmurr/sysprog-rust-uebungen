@@ -34,6 +34,7 @@ fn parse_list(input: &str) -> Result<Vec<Vec<u32>>, <u32 as FromStr>::Err> {
 
 // 3. Kann man die Funktion noch kürzer schreiben?
 // Ja, durch Verwendung von Funktionszeigern statt Closures wo möglich (z.B. str::trim).
+#[allow(dead_code)]
 fn parse_list_short(input: &str) -> Result<Vec<Vec<u32>>, <u32 as FromStr>::Err> {
     input
         .split(';')
