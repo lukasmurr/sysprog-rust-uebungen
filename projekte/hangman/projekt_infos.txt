@@ -1,7 +1,6 @@
 1. Projekt
 Implementierung von Hangman als Comand Line Spiel
 
-Projektmitgleider
+Projektmitglieder
 - Lukas Murr (mat: 2186731)
-
 - David Häckel (mat: 2186744)
