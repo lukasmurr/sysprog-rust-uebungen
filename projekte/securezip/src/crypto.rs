@@ -13,6 +13,7 @@ const NONCE_LEN: usize = 12;
 const KEY_LEN: usize = 32;
 const ITERATIONS: u32 = 600_000;
 
+// [Lukas]
 fn derive_key(password: &str, salt: &[u8]) -> [u8; KEY_LEN] {
     let mut key = [0u8; KEY_LEN];
     let _ = pbkdf2::<hmac::Hmac<Sha256>>(password.as_bytes(), salt, ITERATIONS, &mut key);
@@ -42,6 +43,7 @@ pub fn encrypt(data: &[u8], password: &str) -> Result<Vec<u8>, SecureZipError> {
     Ok(result)
 }
 
+// [Lukas]
 pub fn decrypt(data: &[u8], password: &str) -> Result<Vec<u8>, SecureZipError> {
     if data.len() < SALT_LEN + NONCE_LEN {
         return Err(SecureZipError::Crypto(

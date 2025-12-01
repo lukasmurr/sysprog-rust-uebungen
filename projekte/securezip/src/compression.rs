@@ -4,7 +4,7 @@ use flate2::write::GzEncoder;
 use flate2::read::GzDecoder;
 use flate2::Compression;
 
-// TODO [David]: Implement compression logic.
+// [David]: Implement compression logic.
 // Function signature: `compress(data: &[u8]) -> Result<Vec<u8>>`
 // Use `flate2::write::GzEncoder` or similar.
 pub fn compress(data: &[u8]) -> Result<Vec<u8>> {
@@ -14,7 +14,7 @@ pub fn compress(data: &[u8]) -> Result<Vec<u8>> {
     Ok(compressed)
 }
 
-// TODO [David]: Implement decompression logic.
+// [David]: Implement decompression logic.
 // Function signature: `decompress(data: &[u8]) -> Result<Vec<u8>>`
 // Use `flate2::read::GzDecoder` or similar.
 pub fn decompress(data: &[u8]) -> Result<Vec<u8>> {

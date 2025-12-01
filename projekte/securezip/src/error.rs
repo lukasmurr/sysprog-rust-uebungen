@@ -1,5 +1,6 @@
 use thiserror::Error;
 
+// [Lukas]
 #[derive(Error, Debug)]
 pub enum SecureZipError {
     #[error("IO error: {0}")]

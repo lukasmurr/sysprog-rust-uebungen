@@ -9,7 +9,7 @@ use std::io::{self, Write};
 use clap::{Parser, Subcommand};
 use anyhow::Result;
 
-// TODO [David]: Define CLI arguments using `clap`.
+// [David]: Define CLI arguments using `clap`.
 // Structure:
 // securezip [COMMAND] [ARGS]
 // Commands:
@@ -49,7 +49,7 @@ enum Commands {
         files: Vec<PathBuf>,
 
         /// Output file path
-        #[arg(short, long, default_value = "archive.zip")]
+        #[arg(short, long, default_value = "archive.tar")]
         output: PathBuf,
 
         /// Encrypt the archive
@@ -76,7 +76,7 @@ enum Commands {
     },
 }
 
-// TODO [David]: Implement `main` function.
+// [David]: Implement `main` function.
 // - Parse arguments.
 // - Dispatch to appropriate functions in `archive`, `compression`, and `crypto` modules.
 // - Handle errors gracefully.
