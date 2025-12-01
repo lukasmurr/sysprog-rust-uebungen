@@ -1,7 +1,7 @@
 use crate::error::SecureZipError;
+use flate2::Compression;
 use flate2::read::GzDecoder;
 use flate2::write::GzEncoder;
-use flate2::Compression;
 use std::io::{Read, Write};
 
 // [David]: Implement compression logic.
