@@ -1,0 +1,16 @@
+[package]
+name = "securezip"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+clap = { version = "4.5", features = ["derive"] }
+anyhow = "1.0"
+thiserror = "1.0"
+flate2 = "1.0"
+tar = "0.4"
+aes-gcm = "0.10"
+pbkdf2 = "0.12"
+rand = "0.8"
+sha2 = "0.10"
+hmac = "0.12"

@@ -1,0 +1,6 @@
+2. Projekt
+Entwicklung eines Kommandozeilenwerkzeugs (CLI) zur sicheren Komprimierung und Verschlüsselung sowie zur Dekomprimierung und Entschlüsselung von Dateien und Verzeichnissen.
+
+Projektmitglieder
+- Lukas Murr (mat: 2186731)
+- David Häckel (mat: 2186744)
