@@ -82,10 +82,8 @@ fn read_records<P: AsRef<Path>>(path: P) -> io::Result<Vec<Record>> {
 
     let mut records = Vec::new();
     for chunk in buffer.chunks(RECORD_LEN) {
-        if chunk.len() == RECORD_LEN {
-            if let Ok(record) = Record::from_bytes(chunk) {
-                records.push(record);
-            }
+        if let Ok(record) = Record::from_bytes(chunk) {
+            records.push(record);
         }
     }
     Ok(records)
