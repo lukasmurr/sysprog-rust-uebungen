@@ -3,11 +3,11 @@ mod compression;
 mod crypto;
 mod error;
 
-use std::path::PathBuf;
+use anyhow::Result;
+use clap::{Parser, Subcommand};
 use std::fs;
 use std::io::{self, Write};
-use clap::{Parser, Subcommand};
-use anyhow::Result;
+use std::path::PathBuf;
 
 // [David]: Define CLI arguments using `clap`.
 // Structure:
@@ -85,13 +85,18 @@ fn main() -> Result<()> {
     let cli = Cli::parse();
 
     match cli.command {
-        Commands::Compress { files, output, encrypt, password } => {
+        Commands::Compress {
+            files,
+            output,
+            encrypt,
+            password,
+        } => {
             // Create tar archive
             let archive_data = archive::create_archive(files)?;
-            
+
             // Compress the archive
             let compressed_data = compression::compress(&archive_data)?;
-            
+
             // Optionally encrypt
             let final_data = if encrypt {
                 let pwd = match password {
@@ -102,15 +107,19 @@ fn main() -> Result<()> {
             } else {
                 compressed_data
             };
-            
+
             // Write to output file
             fs::write(&output, final_data)?;
             println!("Archive created: {}", output.display());
         }
-        Commands::Decompress { file, output, password } => {
+        Commands::Decompress {
+            file,
+            output,
+            password,
+        } => {
             // Read archive file
             let data = fs::read(&file)?;
-            
+
             // Try to decrypt if password provided or prompt if decryption fails
             let decrypted_data = match password {
                 Some(pwd) => crypto::decrypt(&data, &pwd)?,
@@ -130,10 +139,10 @@ fn main() -> Result<()> {
                     }
                 }
             };
-            
+
             // Decompress
             let decompressed_data = compression::decompress(&decrypted_data)?;
-            
+
             // Extract archive
             archive::extract_archive(&decompressed_data, output.clone())?;
             println!("Archive extracted to: {}", output.display());
