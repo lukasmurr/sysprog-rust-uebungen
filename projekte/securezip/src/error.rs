@@ -17,7 +17,4 @@ pub enum SecureZipError {
 
     #[error("Invalid password")]
     InvalidPassword,
-
-    #[error("Unknown error: {0}")]
-    Unknown(String),
 }
