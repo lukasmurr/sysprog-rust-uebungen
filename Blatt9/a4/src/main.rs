@@ -32,13 +32,12 @@ fn ueberweisung(konten: &[Mutex<i32>], von: usize, nach: usize, betrag: i32) {
     let mut second_guard = konten[second_lock_idx].lock().unwrap();
     if von == first_lock_idx {
         if *first_guard >= betrag {
-            *first_guard -= betrag * second_guard += betrag;
+            *first_guard -= betrag;
+            *second_guard += betrag;
         }
-    } else {
-        if *second_guard >= betrag {
-            *second_guard -= betrag;
-            *first_guard += betrag;
-        }
+    } else if *second_guard >= betrag {
+        *second_guard -= betrag;
+        *first_guard += betrag;
     }
 }
 
@@ -91,7 +90,7 @@ fn main() {
 
     let mut end_geld = 0;
     println!("---------------------");
-    for (konto) in konten.iter().enumerate() {
+    for konto in konten.iter() {
         let saldo = *konto.lock().unwrap();
         end_geld += saldo;
     }
