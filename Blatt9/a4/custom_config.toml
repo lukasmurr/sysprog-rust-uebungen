@@ -1,0 +1,3 @@
+num_konten = 1000
+threads = 10
+transfers_pro_thread = 100
