@@ -1,0 +1,9 @@
+[package]
+name = "a1"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4.4", features = ["derive"] }
+rand = "0.8"
+nix = { version = "0.27", features = ["process", "signal", "fs"] }

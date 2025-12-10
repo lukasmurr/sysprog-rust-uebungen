@@ -1,0 +1,8 @@
+default:
+    cargo run --release
+
+run-custom:
+    cargo run --release -- -c custom_config.toml
+
+test:
+    cargo run --release -- -c config.toml
