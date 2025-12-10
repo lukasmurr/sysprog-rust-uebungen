@@ -1,6 +1,5 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use std::error::Error;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct ChatMessage {
@@ -17,15 +16,14 @@ pub fn new_message(username: &str, content: &str) -> ChatMessage {
     }
 }
 
-pub fn serialize_message(msg: &ChatMessage) -> Result<String, Box<dyn Error + Send + Sync>> {
+pub fn serialize_message(msg: &ChatMessage) -> serde_json::Result<String> {
     let mut json = serde_json::to_string(msg)?;
     json.push('\n');
     Ok(json)
 }
 
-pub fn deserialize_message(line: &str) -> Result<ChatMessage, Box<dyn Error + Send + Sync>> {
-    let msg = serde_json::from_str(line)?;
-    Ok(msg)
+pub fn deserialize_message(line: &str) -> serde_json::Result<ChatMessage> {
+    serde_json::from_str(line)
 }
 
 #[cfg(test)]

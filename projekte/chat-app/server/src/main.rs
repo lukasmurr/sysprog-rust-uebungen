@@ -1,12 +1,12 @@
+use anyhow::Result;
+use shared::{new_message, serialize_message, ChatMessage};
+use std::collections::HashMap;
+use std::env;
+use std::net::SocketAddr;
+use std::sync::Arc;
+use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::{broadcast, Mutex};
-use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
-use std::net::SocketAddr;
-use std::collections::HashMap;
-use std::sync::Arc;
-use std::env;
-use anyhow::Result;
-use shared::{ChatMessage, new_message, serialize_message};
 
 type Clients = Arc<Mutex<HashMap<SocketAddr, String>>>;
 
@@ -45,7 +45,7 @@ async fn handle_client(
     let mut line = String::new();
 
     writer.write_all(b"Enter your username:\n").await?;
-    
+
     if reader.read_line(&mut line).await? == 0 {
         return Ok(());
     }
