@@ -1,75 +1,103 @@
-// server/src/main.rs
+use tokio::net::{TcpListener, TcpStream};
+use tokio::sync::{broadcast, Mutex};
+use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
+use std::net::SocketAddr;
+use std::collections::HashMap;
+use std::sync::Arc;
+use std::env;
+use anyhow::Result;
+use shared::{ChatMessage, new_message, serialize_message};
 
-// TODO (Lukas): Abhängigkeiten in server/Cargo.toml eintragen:
-// - tokio (mit "full" oder mind. net + io + macros)
-// - anyhow oder eigene Error-Typen
-// - shared (path = "../shared")
+type Clients = Arc<Mutex<HashMap<SocketAddr, String>>>;
 
-// TODO (Lukas): use-Statements vorbereiten:
-// - Tokio: TcpListener, TcpStream, spawn, sync::broadcast, io (AsyncRead/Write, BufReader)
-// - std::net::SocketAddr
-// - std::collections::HashMap
-// - std::sync::Arc
-// - shared::{ChatMessage, new_message, serialize_message, deserialize_message}
+#[tokio::main]
+async fn main() -> Result<()> {
+    let addr = env::var("SERVER_ADDR").unwrap_or_else(|_| "0.0.0.0:8080".to_string());
+    let listener = TcpListener::bind(&addr).await?;
+    println!("Server running on {}", addr);
 
-// TODO (Lukas): Typalias für Clients:
-// type Clients = Arc<Mutex<HashMap<SocketAddr, String>>>;
+    let (tx, _rx) = broadcast::channel::<ChatMessage>(100);
+    let clients: Clients = Arc::new(Mutex::new(HashMap::new()));
 
-// TODO (Lukas): main-Funktion als async definieren mit #[tokio::main]:
-// - Listener auf "0.0.0.0:8080" binden
-// - Broadcast-Channel (Sender/Receiver) für ChatMessage anlegen
-// - Gemeinsame Clients-Map (Arc<Mutex<...>>)
-// - Endlosschleife: incoming connections akzeptieren
-// - Für jede Verbindung einen Task mit tokio::spawn starten
-//   - handle_client(stream, addr, clients.clone(), tx.clone(), tx.subscribe())
+    loop {
+        let (socket, addr) = listener.accept().await?;
+        let tx = tx.clone();
+        let rx = tx.subscribe();
+        let clients = clients.clone();
 
-// TODO (Lukas): Port konfigurierbar machen (später):
-// - über Umgebungsvariable oder CLI-Argument (simple Variante: env::var)
+        tokio::spawn(async move {
+            if let Err(e) = handle_client(socket, addr, clients, tx, rx).await {
+                eprintln!("Error handling client {}: {}", addr, e);
+            }
+        });
+    }
+}
 
-// TODO (Lukas): Funktion handle_client(...) definieren:
-// Parameter:
-// - TcpStream
-// - SocketAddr
-// - Clients (Arc<Mutex<...>>)
-// - broadcast::Sender<ChatMessage>
-// - broadcast::Receiver<ChatMessage>
-//
-// Schritte in handle_client:
-// 1. Stream in reader/writer aufteilen (split)
-// 2. Reader mit BufReader wrappen für read_line
-// 3. Username vom Client lesen:
-//    - Dem Client vorher Hinweis schicken: "Enter your username:"
-//    - Erste Zeile als username.trim() übernehmen
-//    - Wenn leer: Fehlermeldung senden und Verbindung schließen
-// 4. Username in Clients-Map eintragen (addr -> username)
-// 5. Join-Nachricht erstellen (SERVER-User) und an alle broadcasten
-// 6. Zwei asynchrone Teilaufgaben (tokio::spawn) vorbereiten:
-//
-//    a) Lese-Task: Nachrichten dieses Clients lesen
-//       - Schleife: read_line
-//       - "/quit" als spezielles Kommando zum Verlassen behandeln
-//       - normale Zeilen als ChatMessage (new_message(username, inhalt)) bauen
-//       - Message per tx.send(...) an alle broadcasten
-//       - Fehler beim Lesen oder send() sinnvoll loggen und Schleife beenden
-//
-//    b) Schreib-Task: Broadcast-Nachrichten an diesen Client senden
-//       - Schleife: rx.recv() auf Broadcast-Receiver
-//       - Jede ChatMessage mit serialize_message(...) in JSON verwandeln
-//       - Zum Client-Writer schreiben
-//       - Fehler beim Schreiben behandeln (z.B. Verbindung weg → Schleife beenden)
-//
-// 7. Mit tokio::select! oder ähnlichem auf erstes Task-Ende warten
-// 8. Cleanup bei Disconnect:
-//    - Client aus Clients-Map entfernen
-//    - Leave-Nachricht (SERVER) an alle broadcasten
-//    - Logging "addr disconnected (username)"
+async fn handle_client(
+    mut socket: TcpStream,
+    addr: SocketAddr,
+    clients: Clients,
+    tx: broadcast::Sender<ChatMessage>,
+    mut rx: broadcast::Receiver<ChatMessage>,
+) -> Result<()> {
+    let (reader, mut writer) = socket.split();
+    let mut reader = BufReader::new(reader);
+    let mut line = String::new();
 
-// TODO (Lukas): Logging verbessern (optional):
-// - Anzahl verbundener Clients nach Join/Leave ausgeben
-// - Fehler mit eprintln! markieren
+    writer.write_all(b"Enter your username:\n").await?;
+    
+    if reader.read_line(&mut line).await? == 0 {
+        return Ok(());
+    }
+    let username = line.trim().to_string();
+    if username.is_empty() {
+        writer.write_all(b"Username cannot be empty.\n").await?;
+        return Ok(());
+    }
 
-// TODO (Lukas): einfache manuelle Tests planen:
-// - Server starten
-// - Mit mehreren Clients verbinden (später Davids client oder telnet/netcat)
-// - Nachrichten broadcastet sehen
-// - Prüfen, ob Join/Leave-Nachrichten korrekt funktionieren
+    {
+        let mut clients_guard = clients.lock().await;
+        clients_guard.insert(addr, username.clone());
+        println!("Client joined: {} ({})", username, addr);
+        println!("Connected clients: {}", clients_guard.len());
+    }
+
+    let join_msg = new_message("SERVER", &format!("{} has joined the chat", username));
+    let _ = tx.send(join_msg);
+
+    loop {
+        tokio::select! {
+            result = reader.read_line(&mut line) => {
+                if result? == 0 {
+                    break;
+                }
+                let content = line.trim();
+                if content == "/quit" {
+                    break;
+                }
+                if !content.is_empty() {
+                    let msg = new_message(&username, content);
+                    let _ = tx.send(msg);
+                }
+                line.clear();
+            }
+            result = rx.recv() => {
+                let msg = result?;
+                let serialized = serialize_message(&msg)?;
+                writer.write_all(serialized.as_bytes()).await?;
+            }
+        }
+    }
+
+    {
+        let mut clients_guard = clients.lock().await;
+        clients_guard.remove(&addr);
+        println!("Client left: {} ({})", username, addr);
+        println!("Connected clients: {}", clients_guard.len());
+    }
+
+    let leave_msg = new_message("SERVER", &format!("{} has left the chat", username));
+    let _ = tx.send(leave_msg);
+
+    Ok(())
+}

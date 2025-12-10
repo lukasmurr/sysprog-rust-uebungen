@@ -1,25 +1,45 @@
-// shared/src/lib.rs
+use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
+use std::error::Error;
 
-// TODO (Lukas): Dependencies in shared/Cargo.toml eintragen:
-// - serde (mit derive)
-// - serde_json
-// - chrono (für Timestamp, optional)
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct ChatMessage {
+    pub username: String,
+    pub content: String,
+    pub timestamp: DateTime<Utc>,
+}
 
-// TODO (Lukas): ChatMessage-Struktur definieren:
-// - Felder: username: String, content: String, timestamp (z.B. chrono::DateTime<Utc>)
-// - #[derive(Debug, Clone, Serialize, Deserialize)]
+pub fn new_message(username: &str, content: &str) -> ChatMessage {
+    ChatMessage {
+        username: username.to_string(),
+        content: content.to_string(),
+        timestamp: Utc::now(),
+    }
+}
 
-// TODO (Lukas): Hilfsfunktion new_message(username: &str, content: &str) -> ChatMessage
-// - timestamp mit "jetzt" setzen
+pub fn serialize_message(msg: &ChatMessage) -> Result<String, Box<dyn Error + Send + Sync>> {
+    let mut json = serde_json::to_string(msg)?;
+    json.push('\n');
+    Ok(json)
+}
 
-// TODO (Lukas): serialize_message(msg: &ChatMessage) -> Result<String, Error>
-// - Message via serde_json in String serialisieren
-// - Am Ende ein '\n' anhängen, damit server/client zeilenweise lesen können
+pub fn deserialize_message(line: &str) -> Result<ChatMessage, Box<dyn Error + Send + Sync>> {
+    let msg = serde_json::from_str(line)?;
+    Ok(msg)
+}
 
-// TODO (Lukas): deserialize_message(line: &str) -> Result<ChatMessage, Error>
-// - JSON-String zurück in ChatMessage parsen
-// - Sinnvolle Fehler zurückgeben (nicht paniken)
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-// TODO (Lukas): Unit-Tests für Roundtrip:
-// - msg -> serialize -> deserialize -> msg'
-// - Prüfen, dass alle Felder gleich bleiben
+    #[test]
+    fn test_roundtrip() {
+        let msg = new_message("Alice", "Hello World");
+        let serialized = serialize_message(&msg).expect("Serialization failed");
+        let deserialized = deserialize_message(&serialized).expect("Deserialization failed");
+
+        assert_eq!(msg.username, deserialized.username);
+        assert_eq!(msg.content, deserialized.content);
+        assert_eq!(msg.timestamp, deserialized.timestamp);
+    }
+}
