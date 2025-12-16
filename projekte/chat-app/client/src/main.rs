@@ -105,19 +105,17 @@ async fn read_task(mut reader: BufReader<OwnedReadHalf>) {
                 println!("\nServer closed the connection.");
                 break;
             }
-            Ok(_) => {
-                match deserialize_message(line.trim()) {
-                    Ok(msg) => {
-                        print_message(&msg);
-                    }
-                    Err(_) => {
-                        let trimmed = line.trim();
-                        if !trimmed.is_empty() {
-                            println!("{}", trimmed);
-                        }
+            Ok(_) => match deserialize_message(line.trim()) {
+                Ok(msg) => {
+                    print_message(&msg);
+                }
+                Err(_) => {
+                    let trimmed = line.trim();
+                    if !trimmed.is_empty() {
+                        println!("{}", trimmed);
                     }
                 }
-            }
+            },
             Err(e) => {
                 eprintln!("Error reading from server: {}", e);
                 break;
