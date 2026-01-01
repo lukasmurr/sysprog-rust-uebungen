@@ -1,0 +1,6 @@
+3. Projekt
+Implementierung einer chat app
+
+Projektmitglieder
+- Lukas Murr (mat: 2186731)
+- David Häckel (mat: 2186744)
