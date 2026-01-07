@@ -1,0 +1,12 @@
+- **A (24) bei `Text`**: `&dyn Draw` ist ein fat pointer; in deiner Toolchain besteht er hier aus **3 Maschinenwörtern** (z.B. Datenpointer + vtable‑Pointer + ggf. extra Meta‑Info), also 3 × 8 Byte = 24 Byte.[^2][^3]
+- **B (16)**: `&txt` ist ein Pointer auf diesen fat pointer; der Compiler packt hier offenbar **2 Maschinenwörter** in den Wert (z.B. für interne Layout‑Gründe), also 16 Byte.[^2]
+- **C (8)**: `&&txt` ist eine einfache Referenz auf B und ist nur 1 Pointer = 8 Byte.[^4]
+- **D (24)**: `&greeting` zeigt auf `Text`, der u.a. ein `String` enthält; `Text` selbst ist auf dem Stack und besteht z.B. aus:
+    - `String`: 3 Pointer‑große Felder (Pointer, Länge, Kapazität) → 3 × 8 Byte = 24 Byte.[^5]
+    - Damit hat `Text` insgesamt 24 Byte und `size_of_val(&greeting)` misst genau diese Struktur.[^1][^5]
+- **E, F (8)**: `&&greeting` und `&&&greeting` sind wieder nur einfache Referenzen (= Pointer) und deshalb 8 Byte.[^4]
+- **G (32)**: `&boxed_greeting` zeigt auf `BoxedText`, dessen Inhalt auf dem Stack liegt:[^1]
+    - Feld `text: Text` → 24 Byte (wie oben)
+    - Feld `first: char` → 4 Byte
+    - Feld `last: char` → 4 Byte
+- **H, I (8)**: `&&boxed_greeting` und `&&&boxed_greeting` sind wieder nur Pointer, also 8 Byte.[^4]
