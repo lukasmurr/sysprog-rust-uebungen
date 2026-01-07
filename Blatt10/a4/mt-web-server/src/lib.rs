@@ -1,5 +1,5 @@
 use std::{
-    sync::{mpsc, Arc, Mutex},
+    sync::{Arc, Mutex, mpsc},
     thread,
 };
 
@@ -69,18 +69,20 @@ struct Worker {
 
 impl Worker {
     fn new(id: usize, receiver: Arc<Mutex<mpsc::Receiver<Message>>>) -> Worker {
-        let thread = thread::spawn(move || loop {
-            let message = receiver.lock().unwrap().recv().unwrap();
+        let thread = thread::spawn(move || {
+            loop {
+                let message = receiver.lock().unwrap().recv().unwrap();
 
-            match message {
-                Message::NewJob(job) => {
-                    println!("Worker {id} got a job; executing.");
+                match message {
+                    Message::NewJob(job) => {
+                        println!("Worker {id} got a job; executing.");
 
-                    job();
-                }
-                Message::Terminate => {
-                    println!("Worker {id} was told to terminate.");
-                    break;
+                        job();
+                    }
+                    Message::Terminate => {
+                        println!("Worker {id} was told to terminate.");
+                        break;
+                    }
                 }
             }
         });
