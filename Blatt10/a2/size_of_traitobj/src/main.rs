@@ -36,8 +36,8 @@ impl BoxedText {
     fn with_text_and_borders(text: &str, first: char, last: char) -> BoxedText {
         BoxedText {
             text: Text::from(text),
-            first: first,
-            last: last,
+            first,
+            last,
         }
     }
 }
@@ -56,8 +56,8 @@ fn main() {
 
     fn draw_text(txt: &dyn Draw) {
         println!("A: {}", size_of_val(txt));
-        println!("B: {}", size_of_val(&txt));
-        println!("C: {}", size_of_val(&&txt));
+        println!("B: {}", size_of_val(txt));
+        println!("C: {}", size_of_val(txt));
         txt.draw();
     }
 
@@ -66,9 +66,9 @@ fn main() {
     draw_text(&boxed_greeting);
     println!();
     println!("D: {}", size_of_val(&greeting));
-    println!("E: {}", size_of_val(&&greeting));
-    println!("F: {}", size_of_val(&&&greeting));
+    println!("E: {}", size_of_val(&greeting));
+    println!("F: {}", size_of_val(&greeting));
     println!("G: {}", size_of_val(&boxed_greeting));
-    println!("H: {}", size_of_val(&&boxed_greeting));
-    println!("I: {}", size_of_val(&&&boxed_greeting));
+    println!("H: {}", size_of_val(&boxed_greeting));
+    println!("I: {}", size_of_val(&boxed_greeting));
 }

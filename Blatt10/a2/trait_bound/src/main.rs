@@ -1,5 +1,4 @@
-use std::mem::size_of_val;
-
+ 
 trait Draw {
     fn draw(&self);
 }
